@@ -15,7 +15,7 @@ from transformers import AutoTokenizer, AutoProcessor
 from qwen_vl_utils import process_vision_info
 from tokenizer import SVGTokenizer
 
-with open('/PATH/TO/config.yaml', 'r') as f:
+with open('/models/config.yaml', 'r') as f:
     config = yaml.safe_load(f)
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -55,7 +55,7 @@ def load_models(weight_path):
 
         sketch_decoder = SketchDecoder()
         
-        sketch_weight_file = os.path.join(weight_path, "pytorch_model.bin")
+        sketch_weight_file = os.path.join('/models', "pytorch_model.bin")
         if not os.path.exists(sketch_weight_file):
             raise FileNotFoundError(f"pytorch_model.bin not found in {weight_path}")
         
@@ -64,7 +64,7 @@ def load_models(weight_path):
         sketch_decoder = sketch_decoder.to(device).eval()
         
         # Initialize SVG tokenizer
-        svg_tokenizer = SVGTokenizer('/PATH/TO/config.yaml')
+        svg_tokenizer = SVGTokenizer('/models/config.yaml')
         print("Models loaded successfully!")
 
 def process_and_resize_image(image_input, target_size=(200, 200)):
@@ -325,28 +325,3 @@ def process_text_file(input_file, output_dir):
         except Exception as e:
             print(f"Error processing '{text_description}': {e}")
             continue
-
-def main():
-    # Set environment variable to avoid tokenizer parallelization warning
-    os.environ["TOKENIZERS_PARALLELISM"] = "false"
-    
-    args = parse_args()
-    
-    # Load models with specified weight path
-    load_models(args.weight_path)
-    
-    if args.task_type == "image-to-svg":
-        if not os.path.isdir(args.input_dir):
-            print(f"Error: {args.input_dir} is not a directory")
-            return
-        process_image_folder(args.input_dir, args.output_dir)
-    else:  # text-to-svg
-        if not os.path.isfile(args.input_dir):
-            print(f"Error: {args.input_dir} is not a file")
-            return
-        process_text_file(args.input_dir, args.output_dir)
-    
-    print("\nProcessing completed!")
-
-if __name__ == "__main__":
-    main()

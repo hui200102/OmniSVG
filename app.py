@@ -69,7 +69,6 @@ def process_and_resize_image(image_input, target_size=(200, 200)):
     else:
         image = Image.fromarray(image_input)
     
-    
     image = image.resize(target_size, Image.Resampling.LANCZOS)
     
     return image
