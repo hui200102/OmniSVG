@@ -15,7 +15,7 @@ from transformers import AutoTokenizer, AutoProcessor
 from qwen_vl_utils import process_vision_info
 from tokenizer import SVGTokenizer
 
-with open('/root/models/config.yaml', 'r') as f:
+with open('/models/config.yaml', 'r') as f:
     config = yaml.safe_load(f)
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -55,7 +55,7 @@ def load_models(weight_path):
 
         sketch_decoder = SketchDecoder()
         
-        sketch_weight_file = os.path.join('/root/models', "pytorch_model.bin")
+        sketch_weight_file = os.path.join('/models', "pytorch_model.bin")
         if not os.path.exists(sketch_weight_file):
             raise FileNotFoundError(f"pytorch_model.bin not found in {weight_path}")
         
@@ -64,7 +64,7 @@ def load_models(weight_path):
         sketch_decoder = sketch_decoder.to(device).eval()
         
         # Initialize SVG tokenizer
-        svg_tokenizer = SVGTokenizer('/root/models/config.yaml')
+        svg_tokenizer = SVGTokenizer('/models/config.yaml')
         print("Models loaded successfully!")
 
 def process_and_resize_image(image_input, target_size=(200, 200)):
